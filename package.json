@@ -1,0 +1,35 @@
+{
+  "name": "ncc_test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf ./dist && rm -rf ./artifacts",
+    "build": "tsup --dts --format esm,cjs",
+    "build:prod": "pnpm build && pnpm build:package",
+    "build:package": "pnpm build:tracing && pnpm build:app",
+    "build:app": "ncc build ./dist/index.cjs --out ./artifacts/app -t",
+    "build:tracing": "ncc build ./dist/tracing.cjs --out ./artifacts/tracing -t",
+    "start:test": "env-cmd -f ./.env node -r ./dist/tracing.js ./dist/index.js",
+    "start:prod": "env-cmd -f ./.env node -r ./artifacts/tracing/index.cjs ./artifacts/app/index.cjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1",
+    "env-cmd": "^10.1.0",
+    "tsup": "^6.7.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@opentelemetry/exporter-trace-otlp-proto": "^0.39.1",
+    "@opentelemetry/instrumentation-fastify": "^0.31.3",
+    "@opentelemetry/instrumentation-graphql": "^0.34.2",
+    "@opentelemetry/instrumentation-grpc": "^0.39.1",
+    "@opentelemetry/sdk-node": "^0.39.1",
+    "fastify": "^4.17.0"
+  }
+}
