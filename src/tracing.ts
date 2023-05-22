@@ -4,27 +4,31 @@
 
 console.log(process.env);
 
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-proto";
 import { FastifyInstrumentation } from "@opentelemetry/instrumentation-fastify";
-import { GraphQLInstrumentation } from "@opentelemetry/instrumentation-graphql";
-import { GrpcInstrumentation } from "@opentelemetry/instrumentation-grpc";
 import { NodeSDK } from "@opentelemetry/sdk-node";
+import process from "node:process";
 
-const traceExporter = new OTLPTraceExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
-  headers: {
-    "x-honeycomb-team": process.env.HONEYCOMB_API_KEY,
-  },
-});
+const traceExporter = new OTLPTraceExporter();
 
 const sdk = new NodeSDK({
   traceExporter,
   instrumentations: [
-    new GraphQLInstrumentation(),
+    getNodeAutoInstrumentations(),
     new FastifyInstrumentation(),
-    new GrpcInstrumentation(),
   ],
 });
 
 sdk.start();
 console.log("Tracing initialized");
+
+process.on("SIGTERM", () => {
+  sdk
+    .shutdown()
+    .then(
+      () => console.log("SDK shut down successfully"),
+      (err) => console.log("Error shutting down SDK", err)
+    )
+    .finally(() => process.exit(0));
+});
