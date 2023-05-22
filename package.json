@@ -11,6 +11,7 @@
     "build:package": "pnpm build:tracing && pnpm build:app",
     "build:app": "ncc build ./dist/index.cjs --out ./artifacts/app -t",
     "build:tracing": "ncc build ./dist/tracing.cjs --out ./artifacts/tracing -t",
+    "start:ts": "env-cmd -f ./.env ts-node -r ./src/tracing.ts ./src/index.ts",
     "start:test": "env-cmd -f ./.env node -r ./dist/tracing.js ./dist/index.js",
     "start:prod": "env-cmd -f ./.env node -r ./artifacts/tracing/index.cjs ./artifacts/app/index.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,14 +22,14 @@
   "devDependencies": {
     "@vercel/ncc": "^0.36.1",
     "env-cmd": "^10.1.0",
+    "ts-node": "^10.9.1",
     "tsup": "^6.7.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "@opentelemetry/auto-instrumentations-node": "^0.37.0",
     "@opentelemetry/exporter-trace-otlp-proto": "^0.39.1",
     "@opentelemetry/instrumentation-fastify": "^0.31.3",
-    "@opentelemetry/instrumentation-graphql": "^0.34.2",
-    "@opentelemetry/instrumentation-grpc": "^0.39.1",
     "@opentelemetry/sdk-node": "^0.39.1",
     "fastify": "^4.17.0"
   }
